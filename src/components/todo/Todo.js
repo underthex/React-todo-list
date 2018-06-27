@@ -31,10 +31,11 @@ class Todo extends Component {
     let arrData = [];
     for (let i in keys) {
       let k = keys[i],
-        name = objData[k].Name,
+        item = objData[k].Name,
         priority = objData[k].Priority;
       arrData.push({
-        item: name,
+        id: k,
+        item: item,
         priority: priority
       });
     }
@@ -48,17 +49,18 @@ class Todo extends Component {
   }
 
   handleAddTodo(newTodo) {
-    let tempTodo = Object.assign([], this.state.todo);
+    let tempTodo = Object.assign([], this.state.items);
     tempTodo.unshift({
       id: uuid.v4(),
-      item: newTodo.item.value,
-      priority: newTodo.priority.value
+      item: newTodo.item,
+      priority: newTodo.priority
     });
-    this.setState({ todo: tempTodo });
+    this.setState({ items: tempTodo });
+    console.log(this.state);
   }
 
   handleDeleteTodo(id) {
-    let tempTodo = Object.assign([], this.state.todo);
+    let tempTodo = Object.assign([], this.state.items);
     let index = tempTodo.findIndex(item => item.id === id);
     tempTodo.splice(index,1);
     this.setState({ todo: tempTodo });

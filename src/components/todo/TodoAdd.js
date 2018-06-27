@@ -9,13 +9,14 @@ class TodoAdd extends Component {
     e.preventDefault();
     this.props = {
       item: this.refs.item.value,
-      priority: this.refs.priority.value
+      priority: this.refs.priority.value,
+      addTodo: this.props.addTodo
     };
-    console.log(this.props);
-    //this.props.addTodo(this.props);
+    this.props.addTodo(this.props);
   }
 
   render() {
+
     let priorities = this.props.priorities.map(p => {
       return (
         <option
