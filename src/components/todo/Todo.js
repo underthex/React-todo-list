@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import FirebaseAPI from 'firebase';
 import uuid from 'uuid';
 import TodoList from './TodoList';
 import TodoAdd from './TodoAdd';
@@ -10,14 +11,40 @@ class Todo extends Component {
   }
 
   componentWillMount() {
+    // Initialize Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyDcLS7WCBD1oE59Q4UBk2RSjkmpABEprrY",
+      authDomain: "tomopiggery.firebaseapp.com",
+      databaseURL: "https://tomopiggery.firebaseio.com",
+      projectId: "tomopiggery",
+      storageBucket: "tomopiggery.appspot.com",
+      messagingSenderId: "325087179358"
+    };
+    const firebaseApp = FirebaseAPI.initializeApp(firebaseConfig);
+    let ref = firebaseApp.database().ref('Todo');
+    ref.on('value', this.initializeState.bind(this), this.errData.bind(this));
+  }
+
+  initializeState(data) {
+    let objData = data.val(); //Data returned as Object
+    let keys = Object.keys(objData); //Object to Array conversion
+    let arrData = [];
+    for (let i in keys) {
+      let k = keys[i],
+        name = objData[k].Name,
+        priority = objData[k].Priority;
+      arrData.push({
+        item: name,
+        priority: priority
+      });
+    }
     this.setState({
-      owner: 'Leon Tan',
-      todo: [{
-        id: uuid.v4(),
-        item: 'sample list',
-        priority: 5
-      }]
+      items: arrData
     });
+  }
+
+  errData(err) {
+    console.log('Error', err);
   }
 
   handleAddTodo(newTodo) {
@@ -45,7 +72,7 @@ class Todo extends Component {
         />
         <hr />
         <TodoList
-          todo={this.state.todo}
+          todo={this.state.items}
           deleteTodo={this.handleDeleteTodo.bind(this)}
         />
       </div>

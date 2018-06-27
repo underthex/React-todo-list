@@ -6,17 +6,19 @@ class TodoList extends Component {
   }
 
   render() {
-    let items = this.props.todo.map(item => {
-      return (
-        <li id={item.id} key={item.id}>
-          {/*{item.id} &nbsp;*/}
-          {item.item} (priority: {item.priority}) &nbsp;
-          <button
-            onClick={this.deleteTodo.bind(this, item.id)}
-          >X</button>
-        </li>
-      );
-    });
+    let items = '';
+    if(this.props.todo) {
+      items = this.props.todo.map(item => {
+        return (
+          <li id={item.id} key={item.id}>
+            {item.item} (priority: {item.priority}) &nbsp;
+            <button
+              onClick={this.deleteTodo.bind(this, item.id)}
+            >X</button>
+          </li>
+        );
+      });
+    }
 
     return (
       <div className='TodoList'>
