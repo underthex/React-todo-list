@@ -1,82 +1,62 @@
 import React, { Component } from 'react';
-import FirebaseAPI from 'firebase';
-import uuid from 'uuid';
+import firebase from './firebase';
 import TodoList from './TodoList';
 import TodoAdd from './TodoAdd';
 
 class Todo extends Component {
   constructor() {
     super();
-    this.state = {};
-  }
-
-  componentWillMount() {
-    // Initialize Firebase
-    const firebaseConfig = {
-      apiKey: "AIzaSyDcLS7WCBD1oE59Q4UBk2RSjkmpABEprrY",
-      authDomain: "tomopiggery.firebaseapp.com",
-      databaseURL: "https://tomopiggery.firebaseio.com",
-      projectId: "tomopiggery",
-      storageBucket: "tomopiggery.appspot.com",
-      messagingSenderId: "325087179358"
+    this.state = {
+      item: '',
+      priority: '5',
+      items: []
     };
-    const firebaseApp = FirebaseAPI.initializeApp(firebaseConfig);
-    let ref = firebaseApp.database().ref('Todo');
-    ref.on('value', this.initializeState.bind(this), this.errData.bind(this));
   }
 
-  initializeState(data) {
-    let objData = data.val(); //Data returned as Object
-    let keys = Object.keys(objData); //Object to Array conversion
-    let arrData = [];
-    for (let i in keys) {
-      let k = keys[i],
-        item = objData[k].Name,
-        priority = objData[k].Priority;
-      arrData.push({
-        id: k,
-        item: item,
-        priority: priority
-      });
-    }
-    this.setState({
-      items: arrData
+  componentDidMount() {
+    const itemRef = firebase.database().ref('Todo'); //warning: ref’s CaSE SeNSitiVe !!
+    itemRef.on('value', this.retrieveData.bind(this), (error) => {
+      alert('Error : ' + error);
     });
   }
 
-  errData(err) {
-    console.log('Error', err);
+  retrieveData(data) {
+    let objItems = data.val(); //Data returned as Object
+    let arrItems = [];
+    for( let key in objItems ) {
+      arrItems.push({
+        id: key,
+        item: objItems[key].Name,
+        priority: objItems[key].Priority
+      });
+      this.setState({
+        items: arrItems
+      });
+    }
   }
 
   handleAddTodo(newTodo) {
-    let tempTodo = Object.assign([], this.state.items);
-    tempTodo.unshift({
-      id: uuid.v4(),
-      item: newTodo.item,
-      priority: newTodo.priority
-    });
-    this.setState({ items: tempTodo });
-    console.log(this.state);
+    console.log('add');
   }
 
   handleDeleteTodo(id) {
-    let tempTodo = Object.assign([], this.state.items);
-    let index = tempTodo.findIndex(item => item.id === id);
-    tempTodo.splice(index,1);
-    this.setState({ todo: tempTodo });
+    const itemRef = firebase.database().ref('/Todo/' + id);
+    itemRef.remove();
   }
 
   render() {
     return (
       <div className='Todo'>
+
         <TodoAdd
           addTodo={this.handleAddTodo.bind(this)}
         />
         <hr />
         <TodoList
-          todo={this.state.items}
+          items={this.state.items}
           deleteTodo={this.handleDeleteTodo.bind(this)}
         />
+
       </div>
     );
   }

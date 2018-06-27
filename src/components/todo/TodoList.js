@@ -6,9 +6,11 @@ class TodoList extends Component {
   }
 
   render() {
+    console.log(this.props.items);
+
     let items = '';
-    if(this.props.todo) {
-      items = this.props.todo.map(item => {
+    if(this.props.items) {
+      items = this.props.items.map(item => {
         return (
           <li id={item.id} key={item.id}>
             {item.item} (priority: {item.priority}) &nbsp;

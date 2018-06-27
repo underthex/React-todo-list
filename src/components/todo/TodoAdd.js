@@ -7,12 +7,7 @@ class TodoAdd extends Component {
 
   addTodo(e) {
     e.preventDefault();
-    this.props = {
-      item: this.refs.item.value,
-      priority: this.refs.priority.value,
-      addTodo: this.props.addTodo
-    };
-    this.props.addTodo(this.props);
+    this.props.addTodo(this.refs);
   }
 
   render() {
